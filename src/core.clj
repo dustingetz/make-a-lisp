@@ -1,4 +1,5 @@
-(ns user
+(ns core
+  (:gen-class)
   (:require [repl]))
 
 
