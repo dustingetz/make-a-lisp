@@ -1,26 +1,25 @@
 (ns repl
+  (:refer-clojure :exclude [read eval print])
   (:require [clojure.repl]
             [readline]
             [reader]
-            [printer])
-  (:gen-class))
+            [printer]))
 
 
-;; read
-(defn READ [& [strng]]
+(defn read [& [strng]]
   (let [line (if strng strng (read-line))]
     (reader/read-string strng)))
 
-;; eval
-(defn EVAL [ast env]
+
+(defn eval [ast env]
   (cond
     (symbol? ast) (get env ast)
-    (seq? ast) (let [[f & args] (map #(EVAL % env) ast)]
+    (seq? ast) (let [[f & args] (map #(eval % env) ast)]
                  (apply f args))
     :else ast))
 
-;; print
-(defn PRINT [exp]
+
+(defn print [exp]
   exp)
 
 
@@ -30,10 +29,12 @@
    '* *
    '/ /})
 
-(defn rep [strng] (PRINT (EVAL (READ strng), default-env)))
+(defn rep [line]
+  (-> (read line)
+      (eval default-env)
+      print))
 
 
-;; repl loop
 (defn repl-loop []
   (let [line (readline/readline "user> ")]
     (when line
