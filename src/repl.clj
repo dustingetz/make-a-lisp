@@ -26,5 +26,3 @@
     (when line
       (println (rep line))
       (recur))))
-
-
